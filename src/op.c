@@ -63,7 +63,7 @@ void c16_opbin_apply(c16_halfword op,c16_regs *regs,const c16_mem *mem){
         break;
     case LIT_REG:
         c16_mem_fill_lit_reg(mem,regs,&a,&b);
-        reg = c16_regs_parse(regs,(c16_halfword) a);
+        reg = c16_regs_parse(regs,(c16_halfword) b);
         if (c16_regs_issubreg(b)){
             b = *((c16_halfword*) reg);
         }else{
