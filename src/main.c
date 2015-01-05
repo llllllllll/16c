@@ -83,6 +83,6 @@ int main(int argc,char **argv){
 
     pthread_cancel(input_thread);
     c16_regs_destory(regs);
-    c16_mem_destroy(mems);
+    c16_mem_destroy(mem);
     return EXIT_SUCCESS;
 }

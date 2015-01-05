@@ -4,7 +4,7 @@ set(16CANDLES_VERSION_MAJOR 1)
 set(16CANDLES_VERSION_MINOR 0)
 
 set(CMAKE_C_FLAGS
-    "-g -std=gnu11 -lpthread")
+    "-std=gnu11 -lpthread -O3")
 
 include_directories(include)
 add_subdirectory(src)
