@@ -122,11 +122,11 @@ void *c16_process_stdin(void *args){
     int           c;
 
     while ((c = getchar()) != EOF){
-        *(c16_mem_inputv(mem) + regs->inp_w++) = c;
+        c16_mem_inputv(mem)[regs->inp_w++] = (c16_halfword) c;
         if (*(inputc = c16_mem_inputc(mem)) < 256){
             ++(*inputc);
         }
     }
-    *c16_mem_inputb(mem) = 0;
+    *c16_mem_inputb(mem) = c16_false;
     return NULL;
 }

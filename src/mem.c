@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "c16.h"
@@ -27,7 +28,7 @@
 
 
 const char * const default_filepath  = "/tmp/c16";
-const c16_dword    c16_MEM_WIDTH     = 0x10000;
+const c16_dword    c16_MEM_WIDTH     = 0x10000 * sizeof(c16_halfword);
 const c16_word     c16_VMEM_START    = 0x8000;
 const c16_word     c16_INPUTC_OFFSET = 256;
 const c16_word     c16_INPUTB_OFFSET = 257;
@@ -114,8 +115,44 @@ int c16_mem_loaddata_offset(c16_mem *mem,
                             c16_word len,
                             const c16_halfword *data,
                             c16_word o){
-    memcpy(&mem->m_mem[o],data,len);
+    memcpy(&mem->m_mem[o],data,len * sizeof(c16_halfword));
     regs->spt = mem->m_sptstart = len;
+    return 0;
+}
+
+
+// Loads `f` into memory. This assigns the stack pointer (`spt`) to the next
+// addressable address.
+// return: Zero on success, nonzero on failure.
+int c16_mem_loadfile(c16_mem *mem,c16_regs *regs,FILE *f){
+    return c16_mem_loadfile_offset(mem,regs,f,0);
+}
+
+
+// Loads `f` into memory with an offset of `o`. This assigns the stack pointer
+// (`spt`) to the next addressable address.
+// return: Zero on success, nonzero on failure.
+int c16_mem_loadfile_offset(c16_mem *mem,c16_regs *regs,FILE *f,c16_word o){
+    struct stat st;
+    size_t      sz;
+    size_t      nelems;
+
+    // Load the input file into memory with no offset.
+    if (fstat(fileno(f),&st)){
+        perror("c16_mem_loadfile_offset: fstat");
+        return -1;
+    }
+
+    nelems = st.st_size / sizeof(c16_halfword);
+    if (sz > c16_VMEM_START){
+        // Binary cannot be larger than the non-virtual memory.
+        return -1;
+    }
+
+    if (fread(&mem->m_mem[o],sizeof(c16_halfword),nelems,f) != nelems){
+        return -1;
+    }
+    regs->spt = mem->m_sptstart = o + nelems;
     return 0;
 }
 

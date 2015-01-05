@@ -18,6 +18,8 @@
 #ifndef c16_MEMORY_H
 #define c16_MEMORY_H
 
+#include <stdio.h>
+
 #include "c16.h"
 #include "regs.h"
 
@@ -68,6 +70,18 @@ int c16_mem_loaddata_offset(c16_mem*,
                             c16_word,
                             const c16_halfword*,
                             c16_word);
+
+
+// Loads `f` into memory. This assigns the stack pointer (`spt`) to the next
+// addressable address.
+// return: Zero on success, nonzero on failure.
+int c16_mem_loadfile(c16_mem*,c16_regs*,FILE*);
+
+
+// Loads `f` into memory with an offset of `o`. This assigns the stack pointer
+// (`spt`) to the next addressable address.
+// return: Zero on success, nonzero on failure.
+int c16_mem_loadfile_offset(c16_mem*,c16_regs*,FILE*,c16_word);
 
 
 // Grabs an immediate word out of memory advancing the instruction pointer.
