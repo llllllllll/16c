@@ -88,10 +88,22 @@ void c16_opmset_apply(c16_halfword op,c16_regs *regs,const c16_mem *mem){
         isread = c16_false;
         ishalf = c16_false;
         c16_mem_fill_lit_reg(mem,regs,&value,&addr);
+        tmpreg = c16_regs_parse(regs,addr);
+        if (ishalf = c16_regs_issubreg((c16_halfword) addr)){
+            addr = (c16_word) *((c16_halfword*) tmpreg);
+        }else{
+            addr = *((c16_word*) tmpreg);
+        }
         break;
     case OP_MSET_REG_MEMREG:  // Write the value in a reg to a dereferenced reg.
         isread = c16_false;
         c16_mem_fill_reg_reg(mem,regs,&tmpreg_op,&addr);
+        tmpreg = c16_regs_parse(regs,addr);
+        if (ishalf = c16_regs_issubreg((c16_halfword) addr)){
+            addr = (c16_word) *((c16_halfword*) tmpreg);
+        }else{
+            addr = *((c16_word*) tmpreg);
+        }
         tmpreg = c16_regs_parse(regs,(c16_halfword) tmpreg_op);
         if ((ishalf = c16_regs_issubreg((c16_halfword) tmpreg_op))){
             value = (c16_word) *((c16_halfword*) tmpreg);
@@ -206,10 +218,8 @@ void c16_oppeek_apply(c16_regs *regs,const c16_mem *mem){
 
     if (c16_regs_issubreg(regop)){
         *((c16_halfword*) reg) = c16_mem_gethalfword(mem,regs->spt);
-        regs->spt += sizeof(c16_halfword);
     }else{
         *((c16_word*) reg) = c16_mem_getword(mem,regs->spt);
-        regs->spt += sizeof(c16_word);
     }
 }
 
